@@ -134,13 +134,13 @@ Function pointers
 -----------------
 
 Pointers can also contain the address of a section of compiled code in memory, rather than data.
-This allows us to pass a function as a parameter to another function... by passing the address of its code.
+This allows us to pass a function as a parameter to another function by passing the address of its code in memory.
 We will use this later to tell the microcontroller what to do (i.e. what code to execute) when particular events occur.
 
 For now, let's just look at a typical situation where this would be useful.
 Imagine that you want to find the second derivative of a function :math:`f`.
-To find a good numerical estimate, you can use the `central finite different
-<https://en.wikipedia.org/wiki/Finite_difference_coefficient>`_ relationship that you studied in first year:
+To find a good numerical estimate, you can use the `central finite difference
+<https://en.wikipedia.org/wiki/Finite_difference_coefficient>`_ relationship (that you may remember from your computing course):
 
 .. math::
 
@@ -150,9 +150,9 @@ Your implementation is likely to be generic enough to be applied to any function
 Passing the function as a parameter is useful to make sure that such numerical methods
 can be applied to any suitable function.
 
-Study the code below and focus on the implementation of the second_derivative function.
+Study the code below and focus on the implementation of the ``second_derivative`` function.
 It uses the USB Serial communication method introduced in the tutorial section
-to output results, which is useful if you can get your computer to capture it.
+to output results, which is useful here to monitor what happens.
 
 
 
@@ -170,7 +170,7 @@ to output results, which is useful if you can get your computer to capture it.
 
 	float second_derivative( float (*f)(float), float x)
 	{
-		float h = 0.001;
+		float h = 0.01;
 		float d2fdx2;
 		d2fdx2 = ( f(x-h) - 2 * f(x) + f(x+h) ) / (h*h);
 		return d2fdx2;
@@ -189,14 +189,15 @@ to output results, which is useful if you can get your computer to capture it.
 
 	}
 
-
+Note that we need to specify fully in the declaration of second_derivative the types of the input and output of the function we will pass: ``float (*f)(float)``. This makes sure the compiler also knows how to interact with the function, i.e. how to package its input, and how to interpret its output. 
 
 This example may look confusing if you are reading attentively enough.
-Why didn't we pass the address of the function, using second_derivative(&f_1, 1)?
-Why didn't we call the function f using (\*f)(x) in the second_derivative function?
 
-The reason is that a function name is treated by the compiler as a pointer.
-You could also have used the following syntax for the calculation of the second derivative:
+Since ``second_derivative`` takes a pointer to a function as parameter, why didn't we pass the address of the function, using ``second_derivative(&f_1, 1)``? Why didn't we call the function f using ``(\*f)(x)`` in the second_derivative function?
+
+
+The reason is that a function name is already treated by the compiler as a pointer to the function code, to make the program more readable.
+There is some flexibility in the syntax though, and you could also have used the following syntax for the calculation of the second derivative:
 
 .. code-block:: c
 
@@ -212,7 +213,7 @@ but this is less readable.
 Feel free to try it.
 
 **Comment**: Note that we used again the printf function to display the output of the calculation.
-The expression %f indicates that we want to insert there a float number.
+The expression ``%f`` indicates that we want to insert there a float number.
 All the parameters to be inserted in the output are additional parameters to the printf function.
 Printf is a very powerful function to produce text output.
 Feel free to explore further the range of `printf formatting options <https://www.cprogramming.com/tutorial/printf-format-strings.html>`_.
